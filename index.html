@@ -3,101 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KING BINGO ROYAL</title>
+    <title>KING BINGO ROYAL - LIVE</title>
     <style>
-        :root { --gold: #ffd700; --dark: #050505; --red: #ff3300; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; margin: 0; text-align: center; overflow: hidden; }
+        :root { --gold: #ffd700; --dark: #000000; --red: #ff3300; --green: #28a745; --blue: #0088ff; }
+        body { font-family: 'Arial Black', sans-serif; background: #8b0000; color: white; margin: 0; text-align: center; }
         
-        /* 1. ግራፊክስ የክርስቲያኖ እና የሜሲን ፎቶ */
-        .bg-legends { position: fixed; width: 100%; height: 100%; z-index: -1; display: flex; justify-content: space-between; align-items: flex-end; opacity: 0.35; pointer-events: none; }
-        .bg-legends img { height: 60vh; }
+        /* Layout container */
+        .game-container { display: flex; flex-direction: row; justify-content: space-around; padding: 10px; background: #f4d03f; min-height: 95vh; margin: 5px; border-radius: 10px; border: 5px solid #5d4037; }
 
-        .header { display: grid; grid-template-columns: repeat(4, 1fr); background: rgba(0,0,0,0.9); padding: 10px; border-bottom: 2px solid var(--gold); }
-        .header span { display: block; font-size: 16px; font-weight: bold; color: var(--gold); }
+        /* Left Side: Live Ball and My Card */
+        .left-panel { width: 45%; display: flex; flex-direction: column; align-items: center; }
+        .ball-display { width: 100px; height: 100px; background: white; color: red; border-radius: 50%; line-height: 100px; font-size: 50px; font-weight: 900; border: 4px solid #333; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        
+        .my-card-label { background: #0088ff; padding: 5px 15px; border-radius: 5px 5px 0 0; font-size: 14px; font-weight: bold; width: 80%; }
+        .bingo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; background: white; padding: 5px; border: 3px solid #0088ff; width: fit-content; }
+        .cell { width: 35px; height: 35px; background: white; color: black; line-height: 35px; font-weight: 900; border: 1px solid #ccc; font-size: 16px; }
+        .cell.marked { background: var(--green) !important; color: white !important; }
+        .cell.free { background: #0088ff; color: white; font-size: 10px; }
 
-        .screen { display: none; padding: 15px; height: 100vh; }
+        /* Right Side: Bingo Board (1-75) */
+        .right-panel { width: 50%; background: #fffde7; border-radius: 10px; border: 2px solid #5d4037; padding: 5px; }
+        .board-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 5px; }
+        .board-header div { width: 18%; padding: 5px 0; border-radius: 3px; color: white; }
+        .b { background: #00bcd4; } .i { background: #e91e63; } .n { background: #9e9e9e; } .g { background: #4caf50; } .o { background: #ff9800; }
+
+        .numbers-board { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; }
+        .board-num { width: 30px; height: 30px; background: white; color: #333; border-radius: 50%; line-height: 30px; font-size: 12px; font-weight: bold; border: 1px solid #ddd; }
+        .board-num.called { background: #9b59b6; color: white; border-color: #8e44ad; }
+
+        /* Order / Instruction Section */
+        .order-box { background: #b22222; color: white; padding: 10px; border-radius: 5px; margin-top: 10px; font-size: 12px; font-weight: bold; width: 90%; }
+        .btn-bingo { background: #9e9e9e; color: white; border: none; padding: 10px 30px; border-radius: 5px; font-size: 20px; font-weight: bold; margin-top: 10px; cursor: pointer; }
+
+        /* Selection Screen */
+        .screen { display: none; padding: 15px; }
         .active { display: block; }
-
-        /* 2. ካርቴላ የሚያስመርጥበት ክፍል */
-        .pool { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; max-height: 200px; overflow-y: auto; background: #111; padding: 10px; margin: 10px; border-radius: 8px; border: 1px solid #333; }
-        .c-btn { background: #222; color: white; border: 1px solid #444; padding: 10px; border-radius: 4px; cursor: pointer; }
-        .c-btn.selected { border-color: var(--gold); background: rgba(255,215,0,0.1); }
-
-        .bingo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; border: 2px solid var(--gold); width: fit-content; margin: 10px auto; }
-        .cell { width: 52px; height: 52px; background: #fff; color: #000; line-height: 52px; font-weight: bold; border-radius: 5px; font-size: 19px; }
-        .cell.marked { background: #28a745 !important; color: white !important; }
-
-        .ball { width: 85px; height: 85px; background: white; color: black; border-radius: 50%; line-height: 85px; font-size: 40px; font-weight: 900; margin: 15px auto; border: 4px solid var(--gold); box-shadow: 0 0 20px var(--gold); }
-        .btn-main { background: linear-gradient(135deg, #ff9900, #cc3300); border: none; color: white; padding: 18px; width: 90%; border-radius: 40px; font-size: 22px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .pool { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-height: 400px; overflow-y: auto; background: rgba(0,0,0,0.8); padding: 15px; border-radius: 10px; }
+        .c-btn { background: #444; color: white; border: 1px solid #777; padding: 15px; border-radius: 5px; font-weight: bold; }
+        .c-btn.selected { background: var(--gold); color: black; }
     </style>
 </head>
 <body>
-    <div class="bg-legends">
-        <img src="https://purepng.com/public/uploads/large/purepng.com-lionel-messisports-football-messi-lionel-messi-1701527712398jymos.png" alt="Messi">
-        <img src="https://purepng.com/public/uploads/large/purepng.com-cristiano-ronaldosports-football-cristiano-ronaldo-1701527712318lyqyo.png" alt="Ronaldo">
-    </div>
 
     <div id="scr-select" class="screen active">
-        <div class="header">
-            <div>WALLET<span id="w1">0.00</span></div>
-            <div>STAKE<span>10.00</span></div>
-            <div>BINGO<span>KING</span></div>
-            <div>STATUS<span>LIVE</span></div>
-        </div>
-        <h2 style="color:var(--gold);">ካርቴላ ይምረጡ</h2>
+        <h1 style="color:var(--gold)">KING BINGO ROYAL</h1>
+        <p>ካርቴላ ይምረጡ (1-200)</p>
         <div class="pool" id="pool"></div>
-        <div id="sel-status" style="margin:10px; color:var(--gold);">ገና አልተመረጠም</div>
-        <button class="btn-main" onclick="startWaiting()">JOIN GAME</button>
-    </div>
-
-    <div id="scr-wait" class="screen">
-        <h2 style="color:var(--gold); margin-top: 100px;">ተጫዋቾች በመግባት ላይ...</h2>
-        <div style="font-size: 80px; margin: 30px;" id="timer">30</div>
-        <p style="font-size: 20px;">ተጫዋቾች: <span id="fake-players">1</span>/180</p>
-        <div style="font-size: 100px;">⏳</div>
+        <button onclick="startGame()" style="background:orange; padding:20px; width:90%; border-radius:50px; font-size:22px; margin-top:20px; font-weight:bold;">JOIN GAME</button>
     </div>
 
     <div id="scr-game" class="screen">
-        <div style="background:var(--red); padding:10px; font-weight:bold;">ትዕዛዝ: በ መስመር (HORIZONTAL)</div>
-        <div class="header">
-            <div>ደራሽ<span id="pot">1800.00</span></div>
-            <div>ተጫዋች<span>180</span></div>
-            <div>ጥሪ<span id="call-cnt">0</span></div>
-            <div>WALLET<span id="w2">0.00</span></div>
+        <div class="game-container">
+            <div class="left-panel">
+                <div class="ball-display" id="current-ball">-</div>
+                <div class="my-card-label">My Card #<span id="card-id">0</span></div>
+                <div class="bingo-grid" id="card-grid"></div>
+                
+                <div class="order-box">
+                    የጨዋታ ትዕዛዝ:<br>
+                    <span style="font-size:16px;">በ መስመር (HORIZONTAL)</span>
+                </div>
+                
+                <button class="btn-bingo" onclick="checkBingo()">Bingo</button>
+                <div style="color:red; font-size:12px; margin-top:5px;">0.00 Points</div>
+            </div>
+
+            <div class="right-panel">
+                <div class="board-header">
+                    <div class="b">B</div><div class="i">I</div><div class="n">N</div><div class="g">G</div><div class="o">O</div>
+                </div>
+                <div class="numbers-board" id="main-board"></div>
+            </div>
         </div>
-        <div class="ball" id="current-ball">-</div>
-        <div class="bingo-grid" id="card-grid"></div>
-        <button class="btn-main" onclick="checkBingo()">BINGO!</button>
     </div>
 
     <script>
-        let wallet = parseFloat(localStorage.getItem('king_bingo_wallet')) || 36.00;
         let myNums = [];
         let calledNums = [];
-        let isGameRunning = false;
         let selectedCard = null;
 
-        function init() {
-            document.getElementById('w1').innerText = wallet.toFixed(2);
-            const poolDiv = document.getElementById('pool');
-            for(let i=1; i<=200; i++) {
-                let btn = document.createElement('button');
-                btn.className = 'c-btn';
-                btn.innerText = i;
-                btn.onclick = () => {
-                    selectedCard = i;
-                    document.querySelectorAll('.c-btn').forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    document.getElementById('sel-status').innerText = "የተመረጠ ካርቴላ #" + i;
-                    generateCardNumbers();
-                };
-                poolDiv.appendChild(btn);
-            }
+        // ካርቴላዎችን መፍጠር
+        const poolDiv = document.getElementById('pool');
+        for(let i=1; i<=200; i++) {
+            let btn = document.createElement('button');
+            btn.className = 'c-btn';
+            btn.innerText = i;
+            btn.onclick = () => {
+                selectedCard = i;
+                document.querySelectorAll('.c-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                generateCard();
+            };
+            poolDiv.appendChild(btn);
         }
 
-        function generateCardNumbers() {
+        // 1-75 ሰሌዳ መፍጠር
+        const board = document.getElementById('main-board');
+        for(let i=1; i<=75; i++) {
+            board.innerHTML += `<div class="board-num" id="board-${i}">${i}</div>`;
+        }
+
+        function generateCard() {
             myNums = [];
-            // B:1-15, I:16-30, N:31-45, G:46-60, O:61-75
             const ranges = [[1,15], [16,30], [31,45], [46,60], [61,75]];
             ranges.forEach(r => {
                 let col = [];
@@ -107,89 +114,43 @@
                 }
                 myNums.push(...col);
             });
-            myNums[12] = 'FREE'; 
+            myNums[12] = 'FREE';
         }
 
-        // 3. Join ሲሉ 10 ብር ይቀንሳል
-        function startWaiting() {
-            if(!selectedCard) return alert("እባክዎ መጀመሪያ ካርቴላ ይምረጡ!");
-            if(wallet < 10) return alert("በቂ ብር የለዎትም!");
-
-            wallet -= 10;
-            saveWallet();
-            
+        function startGame() {
+            if(!selectedCard) return alert("ካርቴላ ይምረጡ!");
             document.getElementById('scr-select').classList.remove('active');
-            document.getElementById('scr-wait').classList.add('active');
-
-            // 2. 30 ሰከንድ ቆጠራ
-            let seconds = 30;
-            let players = 1;
-            let t = setInterval(() => {
-                seconds--;
-                players += Math.floor(Math.random() * 10) + 1;
-                document.getElementById('timer').innerText = seconds;
-                document.getElementById('fake-players').innerText = players > 180 ? 180 : players;
-
-                if(seconds <= 0) {
-                    clearInterval(t);
-                    launchGame();
-                }
-            }, 1000);
-        }
-
-        function launchGame() {
-            document.getElementById('scr-wait').classList.remove('active');
             document.getElementById('scr-game').classList.add('active');
-            document.getElementById('w2').innerText = wallet.toFixed(2);
+            document.getElementById('card-id').innerText = selectedCard;
             
             const grid = document.getElementById('card-grid');
             grid.innerHTML = '';
             myNums.forEach(n => {
-                grid.innerHTML += `<div class="cell" id="num-${n}">${n==='FREE'?'*':n}</div>`;
+                grid.innerHTML += `<div class="cell ${n==='FREE'?'free':''}" id="num-${n}">${n==='FREE'?'KING':n}</div>`;
             });
-            if(document.getElementById('num-FREE')) document.getElementById('num-FREE').classList.add('marked');
 
-            isGameRunning = true;
-            playGameLoop();
+            runGame();
         }
 
-        function playGameLoop() {
-            let loop = setInterval(() => {
-                if(!isGameRunning || calledNums.length >= 75) { clearInterval(loop); return; }
+        function runGame() {
+            setInterval(() => {
+                if(calledNums.length >= 75) return;
                 let ball;
                 do { ball = Math.floor(Math.random() * 75) + 1; } while(calledNums.includes(ball));
                 calledNums.push(ball);
 
                 document.getElementById('current-ball').innerText = ball;
-                document.getElementById('call-cnt').innerText = calledNums.length;
-
-                let cell = document.getElementById('num-' + ball);
-                if(cell) cell.classList.add('marked');
-            }, 3500);
+                document.getElementById('board-' + ball).classList.add('called');
+                
+                let myCell = document.getElementById('num-' + ball);
+                if(myCell) myCell.classList.add('marked');
+            }, 4000);
         }
 
-        // 5 & 6. ቢንጎ በተን እና ማረጋገጫ
         function checkBingo() {
-            let hits = document.querySelectorAll('.cell.marked').length;
-            if(hits >= 12) { // በትክክል ከተዘጋ
-                isGameRunning = false;
-                wallet += 1800;
-                saveWallet();
-                alert(`CONGRA! አሸናፊ: ተጫዋች #${selectedCard}\nደራሹ 1800 ብር ወደ ዋሌትዎ ገብቷል!`);
-                location.reload();
-            } else { // ካልተዘጋ (Anti-Cheat)
-                isGameRunning = false;
-                alert("ማስጠንቀቂያ: ካርቴላው አልተዘጋም! በማጭበርበር ከጨዋታው ተባረዋል።");
-                location.reload();
-            }
+            alert("ቢንጎ ተፈትሾ አሸናፊ መሆንዎ ይረጋገጣል!");
+            location.reload();
         }
-
-        function saveWallet() {
-            localStorage.setItem('king_bingo_wallet', wallet);
-            document.getElementById('w1').innerText = wallet.toFixed(2);
-        }
-
-        init();
     </script>
 </body>
 </html>
